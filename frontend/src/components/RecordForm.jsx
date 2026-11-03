@@ -111,6 +111,8 @@ function RecordForm({ initial, users, onSubmit, onCancel, saving }) {
           <label className="form-label">Assign To</label>
           <select name="assignedTo" className={cls("form-select", "assignedTo")} value={form.assignedTo} onChange={handleChange}>
             <option value="">-- Select user --</option>
+            {/* "All users" creates one copy per user, so it is only offered when adding */}
+            {!initial && <option value="all">All users</option>}
             {users.map((u) => (
               <option key={u._id} value={u._id}>{u.name} ({u.email})</option>
             ))}

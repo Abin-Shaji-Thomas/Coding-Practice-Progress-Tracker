@@ -26,8 +26,9 @@ A role-based MERN web application for tracking coding practice. An **Admin** add
 - Change password (old password required, same strength rule)
 
 **Admin**
-- Home page with a short description and counts of total users, total records and solved records
-- Operations page: table of all records with Add, Edit and Delete
+- Home page with a short description, counts of total users, total records and solved records, and a progress-per-user table
+- Operations page: table of all records with Add, Edit and Delete, plus filters by user and status
+- Assign a record to one user or to "All users" (creates a separate copy for each user)
 - User Management page: view, add, update (name, email, role) and remove users
 - An admin cannot delete their own account
 

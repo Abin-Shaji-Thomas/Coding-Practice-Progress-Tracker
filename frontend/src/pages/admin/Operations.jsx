@@ -1,4 +1,4 @@
-// Operations page: admin can view, add, edit and delete practice records.
+// Operations page: admin can view, filter, add, edit and delete practice records.
 import { useEffect, useState } from "react";
 import api, { getError } from "../../api";
 import RecordForm from "../../components/RecordForm";
@@ -12,6 +12,10 @@ function Operations() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  // Table filters
+  const [filterUser, setFilterUser] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   // Load records and users from the backend
   async function loadData() {
@@ -58,8 +62,9 @@ function Operations() {
         await api.put("/records/" + editing._id, data);
         setMessage("Record updated successfully");
       } else {
-        await api.post("/records", data);
-        setMessage("Record added successfully");
+        const res = await api.post("/records", data);
+        // For "All users" the backend tells us how many copies were made
+        setMessage(res.data.message || "Record added successfully");
       }
       closeForm();
       loadData();
@@ -84,6 +89,13 @@ function Operations() {
 
   // Bootstrap badge colour for each status
   const statusColor = { Solved: "success", Attempted: "warning", Todo: "secondary" };
+
+  // Records shown in the table after applying the filters
+  const shown = records.filter(
+    (r) =>
+      (filterUser === "" || (r.assignedTo && r.assignedTo._id === filterUser)) &&
+      (filterStatus === "" || r.status === filterStatus)
+  );
 
   return (
     <div>
@@ -118,6 +130,35 @@ function Operations() {
         </div>
       )}
 
+      {/* Filters */}
+      <div className="row g-2 mb-3">
+        <div className="col-sm-5 col-md-4">
+          <select className="form-select" value={filterUser} onChange={(e) => setFilterUser(e.target.value)}>
+            <option value="">All users</option>
+            {users.map((u) => <option key={u._id} value={u._id}>{u.name}</option>)}
+          </select>
+        </div>
+        <div className="col-sm-4 col-md-3">
+          <select className="form-select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+            <option value="">All statuses</option>
+            <option value="Todo">Todo</option>
+            <option value="Attempted">Attempted</option>
+            <option value="Solved">Solved</option>
+          </select>
+        </div>
+        <div className="col-sm-3 col-md-2">
+          <button
+            className="btn btn-outline-secondary w-100"
+            onClick={() => { setFilterUser(""); setFilterStatus(""); }}
+          >
+            Clear
+          </button>
+        </div>
+        <div className="col-md-3 align-self-center text-muted small">
+          Showing {shown.length} of {records.length} records
+        </div>
+      </div>
+
       <div className="card shadow-sm">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -133,12 +174,14 @@ function Operations() {
               </tr>
             </thead>
             <tbody>
-              {records.length === 0 && (
+              {shown.length === 0 && (
                 <tr>
-                  <td colSpan="7" className="text-center text-muted py-4">No records yet.</td>
+                  <td colSpan="7" className="text-center text-muted py-4">
+                    {records.length === 0 ? "No records yet." : "No records match the filters."}
+                  </td>
                 </tr>
               )}
-              {records.map((r) => (
+              {shown.map((r) => (
                 <tr key={r._id}>
                   <td>
                     {r.link ? (

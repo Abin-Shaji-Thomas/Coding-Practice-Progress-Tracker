@@ -123,7 +123,8 @@ npm run dev              # runs on http://localhost:5173
 | PUT    | `/api/users/:id`            | Admin       | Update a user             |
 | DELETE | `/api/users/:id`            | Admin       | Remove a user             |
 | GET    | `/api/records`              | Admin       | List all records          |
-| POST   | `/api/records`              | Admin       | Add a record              |
+| POST   | `/api/records`              | Admin       | Add a record (`assignedTo: "all"` adds one per user) |
+| PUT    | `/api/records/:id/status`   | Logged in   | Update status of own record |
 | PUT    | `/api/records/:id`          | Admin       | Update a record           |
 | DELETE | `/api/records/:id`          | Admin       | Delete a record           |
 | GET    | `/api/records/mine`         | Logged in   | Records assigned to me    |

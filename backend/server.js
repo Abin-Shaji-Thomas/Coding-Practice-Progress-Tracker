@@ -34,6 +34,9 @@ app.get("/api/health", (req, res) => {
 
 // API routes
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/records", require("./routes/recordRoutes"));
+app.use("/api/stats", require("./routes/statsRoutes"));
 
 // Unknown routes
 app.use((req, res) => {

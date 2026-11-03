@@ -1,5 +1,5 @@
-// Normal user dashboard: view-only list of the records assigned to me,
-// with search, filters and summary counts.
+// Normal user dashboard: list of the records assigned to me, with search,
+// filters, summary counts and a status dropdown to update my own progress.
 import { useEffect, useState } from "react";
 import api, { getError } from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -10,6 +10,7 @@ function Dashboard() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [savingId, setSavingId] = useState(null); // record whose status is being saved
 
   // Search and filter values
   const [search, setSearch] = useState("");
@@ -25,6 +26,21 @@ function Dashboard() {
       .catch((err) => setError(getError(err)))
       .finally(() => setLoading(false));
   }, []);
+
+  // Save a new status for one of my records.
+  // On success we replace that record in the list, so the table and the
+  // summary counts update straight away.
+  async function changeStatus(id, newStatus) {
+    setError("");
+    setSavingId(id);
+    try {
+      const res = await api.put("/records/" + id + "/status", { status: newStatus });
+      setRecords((list) => list.map((r) => (r._id === id ? res.data : r)));
+    } catch (err) {
+      setError("Could not update status: " + getError(err));
+    }
+    setSavingId(null);
+  }
 
   // Summary counts (for all my records)
   const total = records.length;
@@ -115,7 +131,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Records table (view only) */}
+      {/* Records table: I can change the status of my own records */}
       <div className="card shadow-sm">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -126,32 +142,46 @@ function Dashboard() {
                 <th>Topic</th>
                 <th>Difficulty</th>
                 <th>Status</th>
+                <th>Question</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan="5" className="text-center py-4">Loading...</td></tr>
+                <tr><td colSpan="6" className="text-center py-4">Loading...</td></tr>
               )}
               {!loading && shown.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="text-center text-muted py-4">
+                  <td colSpan="6" className="text-center text-muted py-4">
                     {records.length === 0 ? "No records have been assigned to you yet." : "No records match your search."}
                   </td>
                 </tr>
               )}
               {shown.map((r) => (
                 <tr key={r._id}>
-                  <td>
-                    {r.link ? (
-                      <a href={r.link} target="_blank" rel="noreferrer">{r.title}</a>
-                    ) : (
-                      r.title
-                    )}
-                  </td>
+                  <td>{r.title}</td>
                   <td>{r.platform}</td>
                   <td>{r.topic}</td>
                   <td>{r.difficulty}</td>
-                  <td><span className={"badge bg-" + statusColor[r.status]}>{r.status}</span></td>
+                  <td>
+                    <select
+                      className={"form-select form-select-sm border-" + statusColor[r.status]}
+                      style={{ minWidth: "120px" }}
+                      value={r.status}
+                      disabled={savingId === r._id}
+                      onChange={(e) => changeStatus(r._id, e.target.value)}
+                    >
+                      {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </td>
+                  <td>
+                    {r.link ? (
+                      <a href={r.link} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline-primary text-nowrap">
+                        Open question
+                      </a>
+                    ) : (
+                      <span className="text-muted small">No link</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

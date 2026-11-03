@@ -31,8 +31,9 @@ A role-based MERN web application for tracking coding practice. An **Admin** add
 - User Management page: view, add, update (name, email, role) and remove users
 - An admin cannot delete their own account
 
-**User (view only)**
+**User**
 - Dashboard showing only the records assigned to them
+- Update the status (Todo / Attempted / Solved) of their own records, and open each question's link in a new tab
 - Search by title, filter by platform, status and difficulty
 - Summary counts: total, solved, attempted and todo
 

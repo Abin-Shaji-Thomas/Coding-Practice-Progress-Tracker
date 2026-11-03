@@ -87,6 +87,12 @@ cp .env.example .env     # then fill in your own values
 npm start                # runs on http://localhost:5000
 ```
 
+Optional: load demo users and sample records (safe to run more than once):
+
+```bash
+npm run seed
+```
+
 ### 2. Frontend
 
 ```bash

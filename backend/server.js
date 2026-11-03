@@ -1,6 +1,6 @@
 // Main entry point of the backend.
 // Sets up Express, CORS, JSON parsing, the database connection and all routes.
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -31,6 +31,9 @@ app.use("/api", async (req, res, next) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", database: "connected" });
 });
+
+// API routes
+app.use("/api/auth", require("./routes/authRoutes"));
 
 // Unknown routes
 app.use((req, res) => {

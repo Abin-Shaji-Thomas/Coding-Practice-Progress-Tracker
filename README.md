@@ -4,8 +4,8 @@ A role-based MERN web application for tracking coding practice. An **Admin** add
 
 ## Live Demo
 
-- **Frontend:** _coming soon_
-- **Backend API:** _coming soon_
+- **Frontend:** https://coding-tracker-two.vercel.app
+- **Backend API:** https://coding-tracker-api.vercel.app
 
 ## Tech Stack
 
